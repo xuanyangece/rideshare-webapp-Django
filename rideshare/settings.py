@@ -25,12 +25,13 @@ SECRET_KEY = '#kun58dqc_x6e)y#5u2bhlptytkqc0q=jq2z-(falm+w*rnqpx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['vcm-8117.vm.duke.edu']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'usersystem',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -73,10 +74,15 @@ WSGI_APPLICATION = 'rideshare.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'ocecncok',
+        'USER': 'ocecncok',
+        'PASSWORD': 'jKAf0w5iOvp1uSnNidqNI2EBt0BzxlD_',
+        'HOST': 'pellefant.db.elephantsql.com',
+        'PORT': '5432y'
     }
 }
 
