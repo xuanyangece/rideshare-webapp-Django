@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from .models import UserProfile
 from django.contrib import auth
 from .forms import RegistrationForm, LoginForm
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
@@ -23,7 +23,7 @@ def register(request):
             user_profile = UserProfile(user=user)
             user_profile.save()
 
-            return HttpResponseRedirect("/login/")
+            return HttpResponseRedirect("/users/login/")
 
     else:
         form = RegistrationForm()
@@ -43,12 +43,12 @@ def login(request):
                 auth.login(request, user)
                 return HttpResponseRedirect(reverse('users:profile', args=[user.id]))
             else:
-                return render(request, 'user/login.html', {'form':form, 'message': 'Wrong password. Please try again.'})
+                return render(request, 'users/login.html', {'form':form, 'message': 'Wrong password. Please try again.'})
 
     else:
         form = LoginForm()
 
     return render(request, 'users/login.html', {'form': form})
 
-def profile(request):
+def profile(request, id):
     return HttpResponse("Welcome")
