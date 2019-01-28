@@ -49,3 +49,6 @@ def login(request):
         form = LoginForm()
 
     return render(request, 'users/login.html', {'form': form})
+
+def profile(request):
+    return HttpResponse("Welcome")

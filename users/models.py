@@ -9,6 +9,6 @@ class UserProfile(models.Model):
     driver = models.BooleanField(default=False)
     vehicle = models.CharField(max_length=20, blank=True)
     plate = models.CharField(max_length=10, blank=True)
-    capacity = models.IntegerField(validators=[MaxValueValidator(200), MinValueValidator(1)], blank=True)
+    capacity = models.IntegerField(default=1, validators=[MaxValueValidator(200),MinValueValidator(1)])
     special = models.CharField(max_length=200, blank=True)
     
