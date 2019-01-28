@@ -51,4 +51,27 @@ def login(request):
     return render(request, 'users/login.html', {'form': form})
 
 def profile(request, id):
-    return HttpResponse("Welcome")
+    return HttpResponseRedirect(reverse('users:regisdriver'), args=[user.id])
+
+def regisdriver(request, id):
+    user = get_object_or_404(User, id=id)
+    user_profile = get_object_or_404(UserProfile, user=user)
+
+    if request.method == 'POST':
+        form = DriverForm(request.POST)
+
+        if form.is_valid():
+            # driver update
+            user_profile.driver = True
+            user_profile.vehicle = form.cleaned_data['vehicle']
+            user_profile.plate = form.cleaned_data['plate']
+            user_profile.capacity = form.cleaned_data['capacity']
+            user_profile.special = form.cleaned_data['special']
+            user_profile.save()
+
+            return HttpResponseRedirect(reverse('users:profile', args=[user.id]))
+
+    else:
+        form = DriverForm()
+
+    return render(request, 'users/regisdriver.html', {'form': form, 'user': user})

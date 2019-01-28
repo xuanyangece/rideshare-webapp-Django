@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 import re
 
 def email_check(email):
@@ -85,3 +86,10 @@ class LoginForm(forms.Form):
             raise forms.ValidationError("This username does not exist.")
         
         return username
+
+class DriverForm(forms.Form):
+    # driver firld hidden
+    vehicle = forms.CharField(label='vehicle', max_length=20)
+    plate = forms.CharField(label='plate', max_length=10)
+    capacity = forms.IntegerField(label='Email', validators=[MaxValueValidator(200),MinValueValidator(1)])
+    special = forms.CharField(max_length=200)
