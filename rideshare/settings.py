@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['vcm-8117.vm.duke.edu']
 
 INSTALLED_APPS = [
     'usersystem',
+    'users',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
