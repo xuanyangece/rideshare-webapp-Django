@@ -7,7 +7,7 @@
 <body>
     {% block content %}
     <a href="{% url 'users:regisdriver' user.id %}">Register for driver(if not)!</a>
-    <a href="/">Log out</a>
+    <a href="{% url 'users:logout' %}">Log out</a>
     {% endblock %}
 </body>
 </html>

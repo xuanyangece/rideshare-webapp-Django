@@ -33,7 +33,7 @@
         <a href="{% url 'users:regisdriver' user.id %}">Register for driver!</a>
         {% endif %}
         <a href="{% url 'users:display' user.id %}">Home</a>
-        <a href="/">Log out</a>
+        <a href="{% url 'users:logout' %}">Log out</a>
         {% endif %}
     </ul>
 

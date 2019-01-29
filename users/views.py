@@ -8,6 +8,11 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+@login_required
+def logout(request):
+    auth.logout(request)
+    return HttpResponseRedirect(reverse('users:homepage'))
+
 def register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
