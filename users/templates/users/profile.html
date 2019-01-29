@@ -17,17 +17,26 @@
         <li>First Name: {{ user.first_name }}</li>
         <li>Last Name: {{ user.last_name }}</li>
         {% if user_profile.driver %}
-        <p>Welcome driver!</p>
+        <p>Here's your vehicle info:</p>
+        <li>Vehicle Type: {{ user_profile.vehicle }}</li>
+        <li>Plate Number: {{ user_profile.plate }}</li>
+        <li>Passenget Capacity: {{ user_profile.capacity }}</li>
+        {% if user_profile.special %}
+        <li>Special Info: {{ user_profile.special}}</li>
+        {% endif %}
         {% else %}
-        <p>Welcome rider!</p>
+        <p>You are not a driver yet.</p>
         {% endif %}
 
         {% if user.is_authenticated %}
         {% if not user_profile.driver %}
         <a href="{% url 'users:regisdriver' user.id %}">Register for driver!</a>
         {% endif %}
+        <a href="/">Home</a>
+        <a href="/">Log out</a>
         {% endif %}
     </ul>
+
     {% endblock %}
 </body>
 </html>

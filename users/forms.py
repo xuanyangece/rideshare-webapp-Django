@@ -92,4 +92,34 @@ class DriverForm(forms.Form):
     vehicle = forms.CharField(label='Vehicle Type', max_length=20)
     plate = forms.CharField(label='License Plate Number', max_length=10)
     capacity = forms.IntegerField(label='Passenger Capacity', validators=[MaxValueValidator(200),MinValueValidator(1)])
-    special = forms.CharField(label='Special Info', max_length=200)
+    special = forms.CharField(label='Special Info(optional)', max_length=200)
+
+    # set rule for validation
+
+    def clean_vehicle(self):
+        vehicle = self.cleaned_data.get('vehicle')
+
+        if len(vehicle) == 0:
+            raise forms.ValidationError("Your vehicle type cannot be empty.")
+        elif len(vehicle) > 20:
+            raise forms.ValidationError("Your vehicle type cannot exceed 20 characters.")
+
+        return vehicle
+    
+    def clean_plate(self):
+        plate = self.cleaned_data.get('plate')
+
+        if len(plate) == 0:
+            raise forms.ValidationError("Your plate number cannot be empty.")
+        elif len(plate) > 10:
+            raise forms.ValidationError("Your plate number cannot exceed 10 characters.")
+        
+        return plate
+    
+    def clean_special(self):
+        special = self.cleaned_data.get('special')
+
+        if len(special) > 200:
+            raise forms.ValidationError("Special info cannot exceed 200 characters.")
+
+        return special
