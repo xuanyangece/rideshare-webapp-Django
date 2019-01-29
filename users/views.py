@@ -55,12 +55,14 @@ def login(request):
 
     return render(request, 'users/login.html', {'form': form})
 
+@login_required
 def profile(request, id):
     user = get_object_or_404(User, id=id)
     user_profile = get_object_or_404(UserProfile, user=user)
     
     return render(request, 'users/profile.html', {'user': user, 'user_profile':user_profile})
 
+@login_required
 def regisdriver(request, id):
     user = get_object_or_404(User, id=id)
     user_profile = get_object_or_404(UserProfile, user=user)
@@ -84,6 +86,7 @@ def regisdriver(request, id):
 
     return render(request, 'users/regisdriver.html', {'form': form, 'user': user})
 
+@login_required
 def display(request, id):
     user = get_object_or_404(User, id=id)
     user_profile = get_object_or_404(UserProfile, user=user)
