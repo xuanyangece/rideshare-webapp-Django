@@ -84,3 +84,6 @@ def display(request, id):
     user_profile = get_object_or_404(UserProfile, user=user)
     
     return render(request, 'users/display.html', {'user': user, 'user_profile': user_profile})
+
+def homepage(request):
+    return render(request, 'users/homepage.html')

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Homepage</title>
+</head>
+<body>
+    {% block content %}
+    <h1>Welcome to ride share XD!</h1>
+    <a href="{% url 'users:register' %}">Register an account now!</a>
+    <a href="{% url 'uses:login' %}">Login</a>
+    {% endblock %}
+</body>
+</html>
