@@ -89,7 +89,7 @@ class LoginForm(forms.Form):
 
 class DriverForm(forms.Form):
     # driver firld hidden
-    vehicle = forms.CharField(label='vehicle', max_length=20)
-    plate = forms.CharField(label='plate', max_length=10)
-    capacity = forms.IntegerField(label='Email', validators=[MaxValueValidator(200),MinValueValidator(1)])
-    special = forms.CharField(max_length=200)
+    vehicle = forms.CharField(label='Vehicle Type', max_length=20)
+    plate = forms.CharField(label='License Plate Number', max_length=10)
+    capacity = forms.IntegerField(label='Passenger Capacity', validators=[MaxValueValidator(200),MinValueValidator(1)])
+    special = forms.CharField(label='Special Info', max_length=200)

@@ -29,6 +29,7 @@
             {% endfor %}
             <div class="button-wrapper submit"><input type="submit" value="DriverRegister"></div>
         </form>
+        <a href="{% url 'users:profile' user.id%}">Back to profile</a>
     </div>
     {% endblock %}
 </body>

@@ -23,7 +23,9 @@
         {% endif %}
 
         {% if user.is_authenticated %}
+        {% if not user.driver %}
         <a href="{% url 'users:regisdriver' user.id %}">Register for driver!</a>
+        {% endif %}
         {% endif %}
     </ul>
     {% endblock %}
