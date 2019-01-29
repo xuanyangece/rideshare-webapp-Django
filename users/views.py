@@ -78,3 +78,9 @@ def regisdriver(request, id):
         form = DriverForm()
 
     return render(request, 'users/regisdriver.html', {'form': form, 'user': user})
+
+def display(request, id):
+    user = get_object_or_404(User, id=id)
+    user_profile = get_object_or_404(UserProfile, user=user)
+    
+    return render(request, 'users/display.html', {'user': user, 'user_profile': user_profile})

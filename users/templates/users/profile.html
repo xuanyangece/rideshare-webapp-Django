@@ -32,7 +32,7 @@
         {% if not user_profile.driver %}
         <a href="{% url 'users:regisdriver' user.id %}">Register for driver!</a>
         {% endif %}
-        <a href="/">Home</a>
+        <a href="{% url 'users:display' user.id %}">Home</a>
         <a href="/">Log out</a>
         {% endif %}
     </ul>
