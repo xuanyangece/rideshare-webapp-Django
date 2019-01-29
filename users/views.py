@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User
 from .models import UserProfile
 from django.contrib import auth
-from .forms import RegistrationForm, LoginForm
+from .forms import RegistrationForm, LoginForm, DriverForm
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -51,7 +51,10 @@ def login(request):
     return render(request, 'users/login.html', {'form': form})
 
 def profile(request, id):
-    return HttpResponseRedirect(reverse('users:regisdriver'), args=[user.id])
+    user = get_object_or_404(User, id=id)
+    user_profile = get_object_or_404(UserProfile, user=user)
+    
+    return render(request, 'users/profile.html', {'user': user})
 
 def regisdriver(request, id):
     user = get_object_or_404(User, id=id)
