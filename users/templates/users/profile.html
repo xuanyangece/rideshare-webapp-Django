@@ -16,14 +16,14 @@
     <ul>
         <li>First Name: {{ user.first_name }}</li>
         <li>Last Name: {{ user.last_name }}</li>
-        {% if user.driver %}
+        {% if user_profile.driver %}
         <p>Welcome driver!</p>
         {% else %}
         <p>Welcome rider!</p>
         {% endif %}
 
         {% if user.is_authenticated %}
-        {% if not user.driver %}
+        {% if not user_profile.driver %}
         <a href="{% url 'users:regisdriver' user.id %}">Register for driver!</a>
         {% endif %}
         {% endif %}
