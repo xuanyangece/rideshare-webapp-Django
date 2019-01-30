@@ -2,19 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DriverRegistration</title>
+    <title>NewRide</title>
 </head>
 <body>
     {% block content %}
-    <h2>Welcome to join us!</h2>
-
-    <h4>Account Info</h4>
-    <ul>
-        <li>Username: {{ user.username }}</li>
-        <li>Email: {{ user.email }}</li>
-    </ul>
-
-    <h2>Driver Information</h2>
+    <h2>Please fill the information about your ride</h2>
+    <br>
     <div class="form-wrapper">
         <form method="POST" action="" enctype="multipart/form-data">
             {% csrf_token %}
@@ -29,7 +22,7 @@
             {% endfor %}
             <div class="button-wrapper submit"><input type="submit" value="DriverRegister"></div>
         </form>
-        <a href="{% url 'users:profile' user.id%}">Back to profile</a>
+        <a href="{% url 'users:display' user.id%}">Back to display</a>
     </div>
     {% endblock %}
 </body>

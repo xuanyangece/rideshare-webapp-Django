@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User
 from .models import UserProfile
 from django.contrib import auth
-from .forms import RegistrationForm, LoginForm, DriverForm
+from .forms import RegistrationForm, LoginForm, DriverForm, RideForm
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -98,4 +98,15 @@ def homepage(request):
 
 @login_required
 def newride(request, id):
-    return HttpResponse("enjoy!")
+    user = get_object_or_404(User, id=id)
+    user_profile = get_object_or_404(UserProfile, user=user)
+
+    if request.method == 'POST':
+        form = RideForm(request.POST)
+
+        #if form.is_valid():
+            # do something
+
+    else:
+        form = RideForm()
+    return render(request, 'users/newride.html', {'form': form, 'user': user})

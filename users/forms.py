@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.contrib.postgres.fields import ArrayField
 import re
 
 def email_check(email):
@@ -92,7 +93,7 @@ class DriverForm(forms.Form):
     vehicle = forms.CharField(label='Vehicle Type', max_length=20)
     plate = forms.CharField(label='License Plate Number', max_length=10)
     capacity = forms.IntegerField(label='Passenger Capacity', validators=[MaxValueValidator(200),MinValueValidator(1)])
-    special = forms.CharField(label='Special Info(optional)', max_length=200)
+    special = forms.CharField(label='Special Info', max_length=200, widget=forms.Textarea, help_text=' (optional)', required=False)
 
     # set rule for validation
 
@@ -123,3 +124,11 @@ class DriverForm(forms.Form):
             raise forms.ValidationError("Special info cannot exceed 200 characters.")
 
         return special
+
+class RideForm(forms.Form):
+    destination = forms.CharField(label='Destination', max_length=50)
+    arrivaldate = forms.DateTimeField(label='Required Arrival Date&Time')
+    passenger = forms.IntegerField(label='Number of Passengers', validators=[MaxValueValidator(200),MinValueValidator(1)])
+    sharable = forms.BooleanField(label='Willing to share this ride?', required=False)
+    vehicle = forms.CharField(label='Vehicle Type', max_length=20, help_text=' (optional)', required=False)
+    special = forms.CharField(label='Special Request', max_length=200, widget=forms.Textarea, help_text=' (optional)', required=False)
