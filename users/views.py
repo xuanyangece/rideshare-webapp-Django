@@ -117,6 +117,11 @@ def newride(request, id):
             ride = Ride(destination=destination, arrivaldate=arrivaldate, passenger=passenger, sharable=sharable, vehicle=vehicle, special=special, rider_id=rider_id)
             ride.save()
 
+            return HttpResponseRedirect(reverse('users:curtride', args=[user.id, ride.id]))
     else:
         form = RideForm()
     return render(request, 'users/newride.html', {'form': form, 'user': user})
+
+@login_required
+def curtride(request, id, rid):
+    return HttpResponse("Hi There")
