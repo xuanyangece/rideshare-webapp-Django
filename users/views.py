@@ -95,3 +95,7 @@ def display(request, id):
 
 def homepage(request):
     return render(request, 'users/homepage.html')
+
+@login_required
+def newride(request, id):
+    return HttpResponse("enjoy!")

@@ -4,6 +4,9 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.postgres.fields import ArrayField
 from datetime import timedelta, datetime
 
+def emptylist():
+    return [];
+
 # Create your models here.
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
@@ -24,4 +27,4 @@ class Ride(models.Model):
     special = models.CharField(max_length=200, default='')
     driver_id = models.IntegerField(default=-1, blank=True)
     rider_id = models.IntegerField(default=-1, blank=False)
-    sharer_id = ArrayField(models.IntegerField(), default=list())
+    sharer_id = ArrayField(models.IntegerField(), default=emptylist)

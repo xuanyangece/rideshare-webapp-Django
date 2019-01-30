@@ -9,5 +9,6 @@
     <a href="{% url 'users:regisdriver' user.id %}">Register for driver(if not)!</a>
     <a href="{% url 'users:logout' %}">Log out</a>
     {% endblock %}
+    <a href="{% url 'users:newride' user.id %}">start a new ride now!</a>
 </body>
 </html>
