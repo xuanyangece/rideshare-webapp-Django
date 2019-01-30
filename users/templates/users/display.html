@@ -6,9 +6,23 @@
 </head>
 <body>
     {% block content %}
-    <a href="{% url 'users:regisdriver' user.id %}">Register for driver(if not)!</a>
+    {% if not user_profile.driver %}
+    <a href="{% url 'users:regisdriver' user.id %}">Register for driver now!</a>
+    {% endif %}
     <a href="{% url 'users:logout' %}">Log out</a>
-    {% endblock %}
+    <h4>Hi {{ user.first_name }}, welcomes!</h4>
+    <ul>Here are your rides:
+        {% for ride in rides %}
+        <li>
+            <a href="{% url 'users:curtride' user.id ride.id %}">To {{ ride.destination }} before {{ ride.arrivaldate }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% if user_profile.driver %}
+    <p>And here's your drive info as a driver:</p>
+    {% endif %}
+    <br>
     <a href="{% url 'users:newride' user.id %}">start a new ride now!</a>
+    {% endblock %}
 </body>
 </html>

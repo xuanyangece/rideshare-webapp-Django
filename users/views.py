@@ -59,8 +59,9 @@ def login(request):
 def profile(request, id):
     user = get_object_or_404(User, id=id)
     user_profile = get_object_or_404(UserProfile, user=user)
+    rides = []
     
-    return render(request, 'users/profile.html', {'user': user, 'user_profile':user_profile})
+    return render(request, 'users/profile.html', {'user': user, 'user_profile':user_profile, 'rides': rides})
 
 @login_required
 def regisdriver(request, id):

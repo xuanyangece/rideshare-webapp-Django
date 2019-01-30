@@ -127,7 +127,7 @@ class DriverForm(forms.Form):
 
 class RideForm(forms.Form):
     destination = forms.CharField(label='Destination', max_length=50)
-    arrivaldate = forms.DateTimeField(label='Required Arrival Date&Time', , help_text=' format: 2006-10-25 14:30')
+    arrivaldate = forms.DateTimeField(label='Required Arrival Date&Time', help_text=' format: 2006-10-25 14:30')
     passenger = forms.IntegerField(label='Number of Passengers', validators=[MaxValueValidator(200),MinValueValidator(1)])
     sharable = forms.BooleanField(label='Willing to share this ride?', required=False)
     vehicle = forms.CharField(label='Vehicle Type', max_length=20, help_text=' (optional)', required=False)
