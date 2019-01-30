@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User
-from .models import UserProfile
+from .models import UserProfile, Ride
 from django.contrib import auth
 from .forms import RegistrationForm, LoginForm, DriverForm, RideForm
 from django.http import HttpResponseRedirect, HttpResponse
@@ -104,8 +104,18 @@ def newride(request, id):
     if request.method == 'POST':
         form = RideForm(request.POST)
 
-        #if form.is_valid():
-            # do something
+        if form.is_valid():
+            # status default open
+            destination = form.cleaned_data['destination']
+            arrivaldate = form.cleaned_data['arrivaldate']
+            passenger = form.cleaned_data['passenger']
+            sharable = form.cleaned_data['sharable']
+            vehicle = form.cleaned_data['vehicle']
+            special = form.cleaned_data['special']
+            rider_id = id
+
+            ride = Ride(destination=destination, arrivaldate=arrivaldate, passenger=passenger, sharable=sharable, vehicle=vehicle, special=special, rider_id=rider_id)
+            ride.save()
 
     else:
         form = RideForm()
