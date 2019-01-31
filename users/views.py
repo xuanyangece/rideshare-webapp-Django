@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User
 from .models import UserProfile, Ride
 from django.contrib import auth
-from .forms import RegistrationForm, LoginForm, DriverForm, RideForm, RideEditForm
+from .forms import RegistrationForm, LoginForm, DriverForm, RideForm, RideEditForm, ShareForm
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -213,3 +213,31 @@ def delete(request, id, rid):
     ride = get_object_or_404(Ride, id=rid)
     ride.delete()
     return HttpResponseRedirect(reverse('users:display', args=[id]))
+
+# fill info to look up new ride as share
+@login_required
+def newshare(request, id):
+    user = get_object_or_404(User, id=id)
+    user_profile = get_object_or_404(UserProfile, user=user)
+    
+    if request.method == 'POST':
+        form = ShareForm(request.POST)
+
+        if form.is_valid():
+            destination = form.cleaned_data['destination']
+            passenger = form.cleaned_data['passenger']
+            earlyarrival = form.cleaned_data['earlyarrival']
+            latearrival = form.cleaned_data['latearrival']
+
+            queryset = Ride.objects.filter(~Q(driver_id=id), ~Q(rider_id=id), status='open', destination=destination, date__range=[earlyarrival, latearrival])
+            # not include sharer itself
+            sharerides = []
+            temp = list(queryset)
+            for one in temp:
+                if id not in one.sharer_id:
+                    sharerides.append(one)
+
+            return render(request, 'users/shareresult.html', {'user': user, 'sharerides': sharerides, 'passenger': passenger})
+    else:
+        form = ShareForm()
+    return render(request, 'users/newshare.html', {'form': form, 'user': user})

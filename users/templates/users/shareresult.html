@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Available Share Rides</title>
+</head>
+<body>
+    {% block content %}
+    <a href="{% url 'users:logout' %}">Log out</a>
+    <h4>Hi {{ user.first_name }}, welcomes!</h4>
+
+    {% if sharerides|length > 0 %}
+    <ul>Here are sharable rides you can join:
+        {% for ride in sharerides %}
+        <li>
+            <p>Driver id: {{ ride.driver_id }}</p>
+            <p>To {{ ride.destination }} before {{ ride.arrivaldate }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No rides available for you to share now</p>
+    <a href="{% url 'users:display' user.id %}">Back to display</a>
+    {% endif %}
+
+    {% endblock %}
+</body>
+</html>

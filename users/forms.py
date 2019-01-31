@@ -139,3 +139,9 @@ class RideEditForm(forms.Form):
     passenger = forms.IntegerField(label='Number of Passengers', validators=[MaxValueValidator(200),MinValueValidator(1)])
     vehicle = forms.CharField(label='Vehicle Type', max_length=20, help_text=' (optional)', required=False)
     special = forms.CharField(label='Special Request', max_length=200, widget=forms.Textarea, help_text=' (optional)', required=False)
+
+class ShareForm(forms.Form):
+    destination = forms.CharField(label='Destination', max_length=50)
+    passenger = forms.IntegerField(label='Number of Passengers', validators=[MaxValueValidator(200),MinValueValidator(1)])
+    earlyarrival = forms.DateTimeField(label='Earliest Arrival Expected', help_text=' format: 2019-10-25 14:30')
+    latearrival = forms.DateTimeField(label='Latest Arrival Expected', help_text=' format: 2019-10-25 14:50')

@@ -16,5 +16,6 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
-    path('<int:id>/newride/', views.newride, name='newride')
+    path('<int:id>/newride/', views.newride, name='newride'),
+    path('<int:id>/newshare/', views.newshare, name='newshare')
 ]

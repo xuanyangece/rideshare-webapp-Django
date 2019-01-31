@@ -82,7 +82,7 @@ DATABASES = {
         'USER': 'ocecncok',
         'PASSWORD': 'jKAf0w5iOvp1uSnNidqNI2EBt0BzxlD_',
         'HOST': 'pellefant.db.elephantsql.com',
-        'PORT': '5432y'
+        'PORT': '5432'
     }
 }
 
