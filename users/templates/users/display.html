@@ -23,12 +23,14 @@
     {% endif %}
 
     {% if confirmedrides|length > 0 %}
+    <ul>Here are your rides unconfirmed:
         {% for ride in confirmedrides %}
         <li>
             <p>Driver id: {{ ride.driver_id }}</p>
             <p>To {{ ride.destination }} before {{ ride.arrivaldate }}</p>
         </li>
         {% endfor %}
+    </ul>
     {% endif %}
 
     {% if user_profile.driver %}
