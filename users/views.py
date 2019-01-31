@@ -207,3 +207,9 @@ def handledrive(request, id, rid):
         ride.save()
 
     return HttpResponseRedirect(reverse('users:display', args=[id]))
+
+@login_required
+def delete(request, id, rid):
+    ride = get_object_or_404(Ride, id=rid)
+    ride.delete()
+    return HttpResponseRedirect(reverse('users:display', args=[id]))

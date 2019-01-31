@@ -6,6 +6,7 @@ app_name = 'users'
 urlpatterns = [
     path('', views.homepage, name='homepage'),
     path('display/<int:id>/', views.display, name='display'),
+    path('display/<int:id>/<int:rid>/delete/', views.delete, name='delete'),
     path('display/<int:id>/<int:rid>/', views.curtride, name='curtride'),
     path('display/<int:id>/<int:rid>/complete/', views.complete, name='complete'),
     path('display/<int:id>/findride/driver/', views.findridedriver, name='findridedriver'),

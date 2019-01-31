@@ -17,6 +17,8 @@
         {% for ride in openrides %}
         <li>
             <a href="{% url 'users:curtride' user.id ride.id %}">To {{ ride.destination }} before {{ ride.arrivaldate }}</a>
+	    <p>Delete this ride? <a href="{% url 'users:delete' user.id ride.id %}">Yes</a></p>
+            <br>
         </li>
         {% endfor %}
     </ul>
