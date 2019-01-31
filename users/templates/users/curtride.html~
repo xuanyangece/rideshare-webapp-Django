@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Ride</title>
+</head>
+<body>
+    {% block content %}
+    <h2>Please edit the information about your ride</h2>
+    <br>
+    <div class="form-wrapper">
+        <form method="PUT" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="field-wrapper">
+                {{ field.errors }}
+                {{ field.label_tag }} {{ field }}
+                {% if field.help_text %}
+                    {{ field.help_text|safe }}
+                {% endif %}
+            </div>
+            {% endfor %}
+            <div class="button-wrapper submit"><input type="submit" value="Submit Edit"></div>
+        </form>
+        <a href="{% url 'users:display' user.id %}">Back to display</a>
+    </div>
+    {% endblock %}
+</body>
+</html>

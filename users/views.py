@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User
 from .models import UserProfile, Ride
 from django.contrib import auth
-from .forms import RegistrationForm, LoginForm, DriverForm, RideForm
+from .forms import RegistrationForm, LoginForm, DriverForm, RideForm, RideEditForm
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -148,7 +148,36 @@ def newride(request, id):
 
 @login_required
 def curtride(request, id, rid):
-    return HttpResponse("Hi There")
+    user = get_object_or_404(User, id=id)
+    user_profile = get_object_or_404(UserProfile, user=user)
+    ride = get_object_or_404(Ride, id=rid)
+
+    # prevent race
+    if ride.status == 'open':
+        if request.method == 'POST':
+            form = RideEditForm(request.POST)
+            if form.is_valid():
+                # status default open
+                ride.destination = form.cleaned_data['destination']
+                ride.arrivaldate = form.cleaned_data['arrivaldate']
+                ride.passenger = form.cleaned_data['passenger']
+                ride.vehicle = form.cleaned_data['vehicle']
+                ride.special = form.cleaned_data['special']
+
+                ride.save()
+                return HttpResponseRedirect(reverse('users:display', args=[user.id]))
+        else:
+            defaultData = {
+                'destination': ride.destination,
+                'arrivaldate': ride.arrivaldate,
+                'passenger': ride.passenger,
+                'vehicle': ride.vehicle,
+                'special': ride.special
+            }
+            form = RideEditForm(defaultData)
+        return render(request, 'users/curtride.html', {'user': user, 'user_profile': user_profile, 'form': form})
+    else:
+        return HttpResponseRedirect(reverse('users:display', args=[id]))
 
 @login_required
 def complete(request, id, rid):
