@@ -6,6 +6,7 @@ from .forms import RegistrationForm, LoginForm, DriverForm, RideForm
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 # Create your views here.
 @login_required
@@ -59,9 +60,8 @@ def login(request):
 def profile(request, id):
     user = get_object_or_404(User, id=id)
     user_profile = get_object_or_404(UserProfile, user=user)
-    rides = []
     
-    return render(request, 'users/profile.html', {'user': user, 'user_profile':user_profile, 'rides': rides})
+    return render(request, 'users/profile.html', {'user': user, 'user_profile':user_profile})
 
 @login_required
 def regisdriver(request, id):
@@ -91,8 +91,18 @@ def regisdriver(request, id):
 def display(request, id):
     user = get_object_or_404(User, id=id)
     user_profile = get_object_or_404(UserProfile, user=user)
+    # rider
+    queryset1 = Ride.objects.filter(~Q(status='complete'), rider_id=id)
+    rides = list(queryset1)
+
+    # driver
+    queryset2 = Ride.objects.filter(~Q(status='complete'), driver_id=id)
+    drive = list(queryset2)
+    has_drive = len(drive) > 0
+    if has_drive:
+        drive = drive[0]
     
-    return render(request, 'users/display.html', {'user': user, 'user_profile': user_profile})
+    return render(request, 'users/display.html', {'user': user, 'user_profile': user_profile, 'rides': rides, 'has_drive': has_drive, 'drive': drive})
 
 def homepage(request):
     return render(request, 'users/homepage.html')
@@ -118,7 +128,7 @@ def newride(request, id):
             ride = Ride(destination=destination, arrivaldate=arrivaldate, passenger=passenger, sharable=sharable, vehicle=vehicle, special=special, rider_id=rider_id)
             ride.save()
 
-            return HttpResponseRedirect(reverse('users:curtride', args=[user.id, ride.id]))
+            return HttpResponseRedirect(reverse('users:display', args=[user.id]))
     else:
         form = RideForm()
     return render(request, 'users/newride.html', {'form': form, 'user': user})
@@ -126,3 +136,10 @@ def newride(request, id):
 @login_required
 def curtride(request, id, rid):
     return HttpResponse("Hi There")
+
+@login_required
+def complete(request, id, rid):
+    ride = Ride.objects.get(id=rid)
+    ride.status = 'complete'
+
+    return HttpResponseRedirect(reverse('users:display', args=[id]))

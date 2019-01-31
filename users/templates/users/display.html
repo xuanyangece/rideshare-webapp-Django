@@ -18,8 +18,14 @@
         </li>
         {% endfor %}
     </ul>
+    <br>
     {% if user_profile.driver %}
     <p>And here's your drive info as a driver:</p>
+    {% if has_drive %}
+    <p>Your drive to {{ drive.destination }} is going on!<a href="{% url 'users:complete' user.id ride.id %}">complete</a></p>
+    {% else %}
+    <a href="/">Find a new ride as driver!</a>
+    {% endif %}
     {% endif %}
     <br>
     <a href="{% url 'users:newride' user.id %}">start a new ride now!</a>

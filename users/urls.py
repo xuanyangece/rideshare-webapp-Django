@@ -7,6 +7,7 @@ urlpatterns = [
     path('', views.homepage, name='homepage'),
     path('display/<int:id>/', views.display, name='display'),
     path('display/<int:id>/<int:rid>/', views.curtride, name='curtride'),
+    path('display/<int:id>/<int:rid>/complete/', views.complete, name='complete'),
     path('user/<int:id>/', views.profile, name='profile'),
     path('user/<int:id>/regisdriver', views.regisdriver, name='regisdriver'),
     path('register/', views.register, name='register'),
