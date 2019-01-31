@@ -229,7 +229,7 @@ def newshare(request, id):
             earlyarrival = form.cleaned_data['earlyarrival']
             latearrival = form.cleaned_data['latearrival']
 
-            queryset = Ride.objects.filter(~Q(driver_id=id), ~Q(rider_id=id), status='open', destination=destination, date__range=[earlyarrival, latearrival])
+            queryset = Ride.objects.filter(~Q(driver_id=id), ~Q(rider_id=id), status='open', destination=destination, arrivaldate__range=[earlyarrival, latearrival])
             # not include sharer itself
             sharerides = []
             temp = list(queryset)
