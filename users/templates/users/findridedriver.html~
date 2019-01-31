@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Find Available Ride to Drive</title>
+</head>
+<body>
+    {% block content %}
+    <a href="{% url 'users:logout' %}">Log out</a>
+    <h4>Hi {{ user.first_name }}, welcomes!</h4>
+    <ul>Here are rides available for you to choose:
+        {% for ride in rides %}
+        <li>
+            <p>To {{ ride.destination }} before {{ ride.arrivaldate }}</p>
+            <p>Passenger number: {{ ride.passenger }}</p>
+            <a href="{% url 'users:handledrive' user.id ride.id}">Go for this one!</a>
+        </li>
+        <br>
+        {% endfor %}
+    </ul>
+    <br>
+    <a href="{% url 'users:display' user.id %}">Back</a>
+    {% endblock %}
+</body>
+</html>

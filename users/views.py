@@ -92,17 +92,30 @@ def display(request, id):
     user = get_object_or_404(User, id=id)
     user_profile = get_object_or_404(UserProfile, user=user)
     # rider
-    queryset1 = Ride.objects.filter(~Q(status='complete'), rider_id=id)
-    rides = list(queryset1)
+    queryset1 = Ride.objects.filter(status='open', rider_id=id)
+    openrides = list(queryset1)
+
+    queryset2 = Ride.objects.filter(status='confirmed', rider_id=id)
+    confirmedrides = list(queryset2)
 
     # driver
-    queryset2 = Ride.objects.filter(~Q(status='complete'), driver_id=id)
-    drive = list(queryset2)
+    queryset3 = Ride.objects.filter(~Q(status='complete'), driver_id=id)
+    drive = list(queryset3)
     has_drive = len(drive) > 0
     if has_drive:
         drive = drive[0]
     
-    return render(request, 'users/display.html', {'user': user, 'user_profile': user_profile, 'rides': rides, 'has_drive': has_drive, 'drive': drive})
+    # share
+
+    context = {
+        'user': user,
+        'user_profile': user_profile,
+        'openrides': openrides,
+        'has_drive': has_drive,
+        'drive': drive,
+        'confirmedrides': confirmedrides
+    }
+    return render(request, 'users/display.html', context)
 
 def homepage(request):
     return render(request, 'users/homepage.html')
@@ -139,7 +152,29 @@ def curtride(request, id, rid):
 
 @login_required
 def complete(request, id, rid):
-    ride = Ride.objects.get(id=rid)
+    ride = get_object_or_404(Ride, id=rid)
     ride.status = 'complete'
+    ride.save()
+
+    return HttpResponseRedirect(reverse('users:display', args=[id]))
+
+@login_required
+def findridedriver(request, id):
+    user = get_object_or_404(User, id=id)
+    user_profile = get_object_or_404(UserProfile, user=user)
+
+    # access all available open rides for driver
+    rides = Ride.objects.filter(Q(vehicle=user_profile.vehicle) | Q(vehicle=''), Q(special='') | Q(special=user_profile.special), ~Q(rider_id=id), status='open', passenger__lte=user_profile.capacity)
+
+    return render(request, 'users/findridedriver.html', {'user': user, 'user_profile': user_profile, 'rides': rides})
+
+@login_required
+def handledrive(request, id, rid):
+    ride = get_object_or_404(Ride, id=rid)
+    # prevent race 
+    if ride.status == 'open':
+        ride.status = 'confirmed'
+        ride.driver_id = id
+        ride.save()
 
     return HttpResponseRedirect(reverse('users:display', args=[id]))

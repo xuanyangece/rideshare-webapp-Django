@@ -11,20 +11,32 @@
     {% endif %}
     <a href="{% url 'users:logout' %}">Log out</a>
     <h4>Hi {{ user.first_name }}, welcomes!</h4>
-    <ul>Here are your rides:
-        {% for ride in rides %}
+
+    {% if openrides|length > 0 %}
+    <ul>Here are your rides unconfirmed:
+        {% for ride in openrides %}
         <li>
             <a href="{% url 'users:curtride' user.id ride.id %}">To {{ ride.destination }} before {{ ride.arrivaldate }}</a>
         </li>
         {% endfor %}
     </ul>
-    <br>
+    {% endif %}
+
+    {% if confirmedrides|length > 0 %}
+        {% for ride in confirmedrides %}
+        <li>
+            <p>Driver id: {{ ride.driver_id }}</p>
+            <p>To {{ ride.destination }} before {{ ride.arrivaldate }}</p>
+        </li>
+        {% endfor %}
+    {% endif %}
+
     {% if user_profile.driver %}
-    <p>And here's your drive info as a driver:</p>
     {% if has_drive %}
-    <p>Your drive to {{ drive.destination }} is going on!<a href="{% url 'users:complete' user.id ride.id %}">complete</a></p>
+    <h4>And here's your drive info as a driver:</h4>
+    <p>Your drive to {{ drive.destination }} is going on!<a href="{% url 'users:complete' user.id drive.id %}">complete</a></p>
     {% else %}
-    <a href="/">Find a new ride as driver!</a>
+    <a href="{% url 'users:findridedriver' user.id %}">Find a new ride as driver!</a>
     {% endif %}
     {% endif %}
     <br>
