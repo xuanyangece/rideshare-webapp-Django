@@ -455,4 +455,4 @@ def editshare(request, id, rid):
     else:
         form = ShareEditForm()
 
-        return render(request, 'users:editshare', {'form': form, 'user': user})
+        return render(request, 'users/editshare.html', {'form': form, 'user': user})
