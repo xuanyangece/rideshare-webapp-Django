@@ -126,3 +126,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 LOGIN_URL = '/users/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = 'smtp.hushmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'ridesharexy@gmail.com'
+EMAIL_HOST_PASSWORD = 'Kobe1314!'
+EMAIL_USE_TLS = True

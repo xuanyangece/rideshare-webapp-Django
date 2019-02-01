@@ -2,11 +2,12 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User
 from .models import UserProfile, Ride
 from django.contrib import auth
-from .forms import RegistrationForm, LoginForm, DriverForm, RideForm, RideEditForm, ShareForm, PasswordForm
+from .forms import RegistrationForm, LoginForm, DriverForm, RideForm, RideEditForm, ShareForm, PasswordForm, ShareEditForm
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.core.mail import send_mail
 
 
 # homepage before login
@@ -105,20 +106,35 @@ def display(request, id):
     # rider
     # open rides
     queryset1 = Ride.objects.filter(status='open', rider_id=id)
-    openrides = list(queryset1)
+    openrides_temp = list(queryset1)
+    openrides = []
+    for one in openrides_temp:
+        temp_sharers = []
+        for i in range(0, len(one.sharer_id)):
+            curt_sharer = get_object_or_404(User, id=one.sharer_id[i]).first_name
+            curt_psg = one.sharer_passenger[i]
+            temp_sharers.append({'name': curt_sharer, 'num': curt_psg})
+        openrides.append({'destination': one.destination, 'arrivaldate': one.arrivaldate, 'sharers': temp_sharers, 'id': one.id, 'group': len(one.sharer_id)})
 
     # confirmed rides
     queryset2 = Ride.objects.filter(status='confirmed', rider_id=id)
     confirmedrides = list(queryset2)
     cfm_info_rider = []
     for i in range(0, len(confirmedrides)):
+        # get driver info
         curt_driver_id = confirmedrides[i].driver_id
         curt_driver = get_object_or_404(User, id=curt_driver_id)
         driver_name = curt_driver.first_name
         vehicle_info = get_object_or_404(UserProfile, user=curt_driver).vehicle
         curt_destination = confirmedrides[i].destination
         curt_arrivaldate = confirmedrides[i].arrivaldate
-        cfm_info_rider.append({'destination': curt_destination, 'arrivaldate': curt_arrivaldate, 'driver_name': driver_name, 'vehicle_info': vehicle_info})
+        # get sharer info
+        temp_sharers = []
+        for j in range(0, len(confirmedrides[i].sharer_id)):
+            curt_sharer = get_object_or_404(User, id=confirmedrides[i].sharer_id[j]).first_name
+            curt_psg = confirmedrides[i].sharer_passenger[j]
+            temp_sharers.append({'name': curt_sharer, 'num': curt_psg})
+        cfm_info_rider.append({'destination': curt_destination, 'arrivaldate': curt_arrivaldate, 'driver_name': driver_name, 'vehicle_info': vehicle_info, 'sharers': temp_sharers, 'id': confirmedrides[i].id, 'group': len(confirmedrides[i].sharer_id)})
 
     # driver
     queryset3 = Ride.objects.filter(~Q(status='complete'), driver_id=id)
@@ -238,8 +254,9 @@ def curtride(request, id, rid):
 @login_required
 def complete(request, id, rid):
     ride = get_object_or_404(Ride, id=rid)
-    ride.status = 'complete'
-    ride.save()
+    if ride.status is not 'complete':
+        ride.status = 'complete'
+        ride.save()
 
     # send emails
 
@@ -279,6 +296,22 @@ def handledrive(request, id, rid):
         ride.status = 'confirmed'
         ride.driver_id = id
         ride.save()
+        
+        # send email to rider & sharers
+        receivers = []
+        rider_email = get_object_or_404(User, id=ride.rider_id).email
+        receivers.append(rider_email)
+        for sid in ride.sharer_id:
+            sharer_email = get_object_or_404(User, id=sid).email
+            receivers.append(sharer_email)
+        send_mail(
+            'Drive Comfirmed!',
+            'Your drive to ' + ride.destination + ' is confirmed!',
+            'ridesharexy@hushmail.com',
+            receivers,
+            fail_silently=False,
+        )
+
 
     return HttpResponseRedirect(reverse('users:display', args=[id]))
 
@@ -403,3 +436,23 @@ def changepassword(request, id):
         form = PasswordForm()
         
         return render(request, 'users/changepassword.html', {'user': user, 'form': form})
+
+# sharer edit passenger
+@login_required
+def editshare(request, id, rid):
+    user = get_object_or_404(User, id=id)
+
+    if request.method == 'POST':
+        form = ShareEditForm(request.POST)
+        if form.is_valid():
+            passenger = form.cleaned_data['passenger']
+            ride = get_object_or_404(Ride, id=rid)
+            index = ride.sharer_id.index(id)
+            ride.sharer_passenger[index] = passenger
+            ride.save()
+
+            return HttpResponseRedirect(reverse('users:display', args=[user.id]))
+    else:
+        form = ShareEditForm()
+
+        return render(request, 'users:editshare', {'form': form, 'user': user})

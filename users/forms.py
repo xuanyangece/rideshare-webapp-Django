@@ -146,6 +146,9 @@ class ShareForm(forms.Form):
     earlyarrival = forms.DateTimeField(label='Earliest Arrival Expected', help_text=' format: 2019-10-25 14:30')
     latearrival = forms.DateTimeField(label='Latest Arrival Expected', help_text=' format: 2019-10-25 14:50')
 
+class ShareEditForm(forms.Form):
+    passenger = forms.IntegerField(label='Number of Passengers', validators=[MaxValueValidator(200),MinValueValidator(1)])
+
 class PasswordForm(forms.Form):
     oldpassword = forms.CharField(label='Old Password', widget=forms.PasswordInput)
     password1 = forms.CharField(label='New Password', widget=forms.PasswordInput)
