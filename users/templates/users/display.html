@@ -10,10 +10,12 @@
     <a href="{% url 'users:regisdriver' user.id %}">Register for driver now!</a>
     {% endif %}
     <a href="{% url 'users:logout' %}">Log out</a>
+    <a href="{% url 'users:profile' user.id %}">Account Info</a>
     <h4>Hi {{ user.first_name }}, welcomes!</h4>
-
+    
+    <!-- Info for the rider part -->
     {% if openrides|length > 0 %}
-    <ul>Here are your rides unconfirmed:
+    <ul>Here are your unconfirmed rides as main rider:
         {% for ride in openrides %}
         <li>
             <a href="{% url 'users:curtride' user.id ride.id %}">To {{ ride.destination }} before {{ ride.arrivaldate }}</a>
@@ -25,7 +27,7 @@
     {% endif %}
 
     {% if confirmedrides|length > 0 %}
-    <ul>Here are your rides confirmed:
+    <ul>Here are your confirmed rides as main rider:
         {% for ride in confirmedrides %}
         <li>
             <p>Driver id: {{ ride.driver_id }}</p>
@@ -35,6 +37,40 @@
     </ul>
     {% endif %}
 
+    <br>
+
+    <!-- Info for the sharer part -->
+
+    {% if openshares|length > 0 %}
+    <ul>Here are your unconfirmed rides as sharer:
+        {% for ride in openshares %}
+        <li>
+            <a href="{% url 'users:curtride' user.id ride.id %}">To {{ ride.destination }} before {{ ride.arrivaldate }}</a>
+            <p>Id of Main Rider: {{ ride.rider_id}}</p>
+            <p>Delete this ride? <a href="">Yes</a></p>
+            <br>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if confirmedshares|length > 0 %}
+    <ul>Here are your confirmed rides as sharer:
+        {% for ride in confirmedshares %}
+        <li>
+            <a href="{% url 'users:curtride' user.id ride.id %}">To {{ ride.destination }} before {{ ride.arrivaldate }}</a>
+            <p>Id of Driver: {{ ride.driver_id }}</p>
+            <p>Id of Main Rider: {{ ride.rider_id}}</p>
+            <p>It's confirmed, you cannot delete.</p>
+            <br>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <br>
+
+    <!-- Info for the driver part -->
     {% if user_profile.driver %}
     {% if has_drive %}
     <h4>And here's your drive info as a driver:</h4>
@@ -44,6 +80,7 @@
     {% endif %}
     {% endif %}
     <br>
+
     <a href="{% url 'users:newride' user.id %}">Start a new ride now!</a>
     <p>or</p>
     <a href="{% url 'users:newshare' user.id %}">Join a ride with other riders!</a>

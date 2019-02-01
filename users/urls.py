@@ -17,5 +17,7 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
     path('<int:id>/newride/', views.newride, name='newride'),
-    path('<int:id>/newshare/', views.newshare, name='newshare')
+    path('<int:id>/newshare/', views.newshare, name='newshare'),
+    path('<int:id>/<int:rid>/<int:passenger>/joinshare', views.joinshare, name='joinshare'),
+    path('<int:id>/<int:rid>/deleteshare', views.deleteshare, name='deleteshare')
 ]

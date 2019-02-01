@@ -28,3 +28,4 @@ class Ride(models.Model):
     driver_id = models.IntegerField(default=-1, blank=True)
     rider_id = models.IntegerField(default=-1, blank=False)
     sharer_id = ArrayField(models.IntegerField(), default=emptylist)
+    sharer_passenger = ArrayField(models.IntegerField(), default=emptylist)

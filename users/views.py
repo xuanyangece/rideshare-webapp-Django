@@ -8,12 +8,18 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 
-# Create your views here.
+
+# homepage before login
+def homepage(request):
+    return render(request, 'users/homepage.html')
+
+# logout your account
 @login_required
 def logout(request):
     auth.logout(request)
     return HttpResponseRedirect(reverse('users:homepage'))
 
+# register a new account
 def register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
@@ -36,6 +42,7 @@ def register(request):
 
     return render(request, 'users/registration.html', {'form':form})
 
+# login into your account
 def login(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -56,6 +63,7 @@ def login(request):
 
     return render(request, 'users/login.html', {'form': form})
 
+# profile info page
 @login_required
 def profile(request, id):
     user = get_object_or_404(User, id=id)
@@ -63,6 +71,7 @@ def profile(request, id):
     
     return render(request, 'users/profile.html', {'user': user, 'user_profile':user_profile})
 
+# register as a driver
 @login_required
 def regisdriver(request, id):
     user = get_object_or_404(User, id=id)
@@ -87,14 +96,17 @@ def regisdriver(request, id):
 
     return render(request, 'users/regisdriver.html', {'form': form, 'user': user})
 
+# main user page, display rides info
 @login_required
 def display(request, id):
     user = get_object_or_404(User, id=id)
     user_profile = get_object_or_404(UserProfile, user=user)
     # rider
+    # open rides
     queryset1 = Ride.objects.filter(status='open', rider_id=id)
     openrides = list(queryset1)
 
+    # confirmed rides
     queryset2 = Ride.objects.filter(status='confirmed', rider_id=id)
     confirmedrides = list(queryset2)
 
@@ -106,24 +118,38 @@ def display(request, id):
         drive = drive[0]
     
     # share
+    # unconfirmed
+    queryset4 = Ride.objects.filter(status='open')
+    tempopenshare = list(queryset4)
+    openshares = []
+    for one in tempopenshare:
+        if id in one.sharer_id:
+            openshares.append(one)
+
+    # confirmed
+    queryset5 = Ride.objects.filter(status='confirmed')
+    tempconfirmedshare = list(queryset5)
+    confirmedshares = []
+    for one in tempconfirmedshare:
+        if id in one.sharer_id:
+            confirmedshares.append(one)
 
     context = {
         'user': user,
         'user_profile': user_profile,
-        'openrides': openrides,
         'has_drive': has_drive,
         'drive': drive,
-        'confirmedrides': confirmedrides
+        'openrides': openrides,
+        'confirmedrides': confirmedrides,
+        'openshares': openshares,
+        'confirmedshares': confirmedshares
     }
     return render(request, 'users/display.html', context)
 
-def homepage(request):
-    return render(request, 'users/homepage.html')
-
+# start a new ride as rider
 @login_required
 def newride(request, id):
     user = get_object_or_404(User, id=id)
-    user_profile = get_object_or_404(UserProfile, user=user)
 
     if request.method == 'POST':
         form = RideForm(request.POST)
@@ -141,11 +167,12 @@ def newride(request, id):
             ride = Ride(destination=destination, arrivaldate=arrivaldate, passenger=passenger, sharable=sharable, vehicle=vehicle, special=special, rider_id=rider_id)
             ride.save()
 
-            return HttpResponseRedirect(reverse('users:display', args=[user.id]))
+            return HttpResponseRedirect(reverse('users:display', args=[id]))
     else:
         form = RideForm()
     return render(request, 'users/newride.html', {'form': form, 'user': user})
 
+# edit current ride for rider
 @login_required
 def curtride(request, id, rid):
     user = get_object_or_404(User, id=id)
@@ -179,6 +206,7 @@ def curtride(request, id, rid):
     else:
         return HttpResponseRedirect(reverse('users:display', args=[id]))
 
+# driver clicked confirmed
 @login_required
 def complete(request, id, rid):
     ride = get_object_or_404(Ride, id=rid)
@@ -187,16 +215,31 @@ def complete(request, id, rid):
 
     return HttpResponseRedirect(reverse('users:display', args=[id]))
 
+# find available rides for driver
 @login_required
 def findridedriver(request, id):
     user = get_object_or_404(User, id=id)
     user_profile = get_object_or_404(UserProfile, user=user)
 
     # access all available open rides for driver
-    rides = Ride.objects.filter(Q(vehicle=user_profile.vehicle) | Q(vehicle=''), Q(special='') | Q(special=user_profile.special), ~Q(rider_id=id), status='open', passenger__lte=user_profile.capacity)
+    queryset = Ride.objects.filter(Q(vehicle=user_profile.vehicle) | Q(vehicle=''), Q(special='') | Q(special=user_profile.special), ~Q(rider_id=id), status='open')
+    temp = list(queryset)
+    rides = []
+    # condition for passenger limit&sharer
+    for ride in temp:
+        # continue if driver's sharer
+        if ride in ride.sharer_id:
+            continue
+        totalpsg = ride.passenger
+        # add sharer
+        for number in ride.sharer_passenger:
+            totalpsg += number
+        if totalpsg <= user_profile.capacity:
+            rides.append(ride)
 
     return render(request, 'users/findridedriver.html', {'user': user, 'user_profile': user_profile, 'rides': rides})
 
+# for confirmation
 @login_required
 def handledrive(request, id, rid):
     ride = get_object_or_404(Ride, id=rid)
@@ -208,17 +251,19 @@ def handledrive(request, id, rid):
 
     return HttpResponseRedirect(reverse('users:display', args=[id]))
 
+# delete ride if not confirmed
 @login_required
 def delete(request, id, rid):
     ride = get_object_or_404(Ride, id=rid)
-    ride.delete()
+    # prevent race
+    if ride.status == 'open':
+        ride.delete()
     return HttpResponseRedirect(reverse('users:display', args=[id]))
 
 # fill info to look up new ride as share
 @login_required
 def newshare(request, id):
     user = get_object_or_404(User, id=id)
-    user_profile = get_object_or_404(UserProfile, user=user)
     
     if request.method == 'POST':
         form = ShareForm(request.POST)
@@ -241,3 +286,29 @@ def newshare(request, id):
     else:
         form = ShareForm()
     return render(request, 'users/newshare.html', {'form': form, 'user': user})
+
+# handle ride for new join sharer
+@login_required
+def joinshare(request, id, rid, passenger):
+    ride = get_object_or_404(Ride, id=rid)
+    # prevent race
+    if ride.status == 'open':
+        ride.sharer_id.append(id)
+        ride.sharer_passenger.append(passenger)
+        ride.save()
+
+    return HttpResponseRedirect(reverse('users:display', args=[id]))
+
+# handle delete share
+def deleteshare(request, id, rid):
+    ride = get_object_or_404(Ride, id=rid)
+    # prevent race
+    if ride.status == 'open':
+        # find sharer index
+        index = ride.sharer_id.index(id)
+        ride.sharer_id.remove(id)
+        # delete in sharer_passenger
+        del ride.sharer_passenger[index]
+        ride.save()
+
+    return HttpResponseRedirect(reverse('users:display', args=[id]))
