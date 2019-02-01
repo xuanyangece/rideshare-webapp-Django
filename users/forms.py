@@ -145,3 +145,37 @@ class ShareForm(forms.Form):
     passenger = forms.IntegerField(label='Number of Passengers', validators=[MaxValueValidator(200),MinValueValidator(1)])
     earlyarrival = forms.DateTimeField(label='Earliest Arrival Expected', help_text=' format: 2019-10-25 14:30')
     latearrival = forms.DateTimeField(label='Latest Arrival Expected', help_text=' format: 2019-10-25 14:50')
+
+class PasswordForm(forms.Form):
+    oldpassword = forms.CharField(label='Old Password', widget=forms.PasswordInput)
+    password1 = forms.CharField(label='New Password', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='New Password Confirmation', widget=forms.PasswordInput)
+    
+    def clean_oldpassword(self):
+        oldpassword = self.cleaned_data.get('oldpassword')
+
+        if len(oldpassword) < 8:
+            raise forms.ValidationError("Old password should be at least 8 characters.")
+        elif len(oldpassword) > 20:
+            raise forms.ValidationError("Old password cannot exceed 20 characters.")
+        
+        return oldpassword
+
+    def clean_password1(self):
+        password1 = self.cleaned_data.get('password1')
+
+        if len(password1) < 8:
+            raise forms.ValidationError("Password should be at least 8 characters.")
+        elif len(password1) > 20:
+            raise forms.ValidationError("Password cannot exceed 20 characters.")
+        
+        return password1
+    
+    def clean_password2(self):
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
+
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("Password mismatch. Please enter again.")
+
+        return password2

@@ -31,7 +31,11 @@
         {% if user.is_authenticated %}
         {% if not user_profile.driver %}
         <a href="{% url 'users:regisdriver' user.id %}">Register for driver!</a>
+        {% else %}
+        <a href="{% url 'users:editinfo' user.id %}">Edit Your Driver info</a>
         {% endif %}
+        
+        <a href="{% url 'users:changepassword' user.id %}">Change Password</a>
         <a href="{% url 'users:display' user.id %}">Home</a>
         <a href="{% url 'users:logout' %}">Log out</a>
         {% endif %}

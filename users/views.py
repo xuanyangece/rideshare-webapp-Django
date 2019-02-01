@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User
 from .models import UserProfile, Ride
 from django.contrib import auth
-from .forms import RegistrationForm, LoginForm, DriverForm, RideForm, RideEditForm, ShareForm
+from .forms import RegistrationForm, LoginForm, DriverForm, RideForm, RideEditForm, ShareForm, PasswordForm
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -331,6 +331,7 @@ def joinshare(request, id, rid, passenger):
     return HttpResponseRedirect(reverse('users:display', args=[id]))
 
 # handle delete share
+@login_required
 def deleteshare(request, id, rid):
     ride = get_object_or_404(Ride, id=rid)
     # prevent race
@@ -343,3 +344,59 @@ def deleteshare(request, id, rid):
         ride.save()
 
     return HttpResponseRedirect(reverse('users:display', args=[id]))
+
+# edit driver info
+def editinfo(request, id):
+    user = get_object_or_404(User, id=id)
+    user_profile = get_object_or_404(UserProfile, user=user)
+
+    if request.method == 'POST':
+        form = DriverForm(request.POST)
+
+        if form.is_valid():
+            user_profile.vehicle = form.cleaned_data['vehicle']
+            user_profile.plate = form.cleaned_data['plate']
+            user_profile.capacity = form.cleaned_data['capacity']
+            user_profile.special = form.cleaned_data['special']
+            user_profile.save()
+
+            return HttpResponseRedirect(reverse('users:profile', args=[user.id]))
+    else:
+        defaultData = {
+            'vehicle': user_profile.vehicle,
+            'plate': user_profile.plate,
+            'capacity': user_profile.capacity,
+            'special': user_profile.special,
+        }
+        form = DriverForm(defaultData)
+
+        return render(request, 'users/editinfo.html', {'user': user, 'user_profile': user_profile, 'form': form})
+
+# change password
+@login_required
+def changepassword(request, id):
+    user = get_object_or_404(User, id=id)
+    # if we have to update user_profile?
+
+    if request.method == 'POST':
+        form = PasswordForm(request.POST)
+        if form.is_valid():
+            password = form.cleaned_data['oldpassword']
+            username = user.username
+
+            user = auth.authenticate(username=username, password=password)
+
+            if user is not None and user.is_active:
+                new_password = form.cleaned_data['password2']
+                user.set_password(new_password)
+                user.save()
+                
+                return HttpResponseRedirect(reverse('users:login'))
+            else:
+                form = PasswordForm()
+            
+                return render(request, 'users/changepassword.html', {'user': user, 'form': form, 'message': 'Old password incorrect, please enter again.'})
+    else:
+        form = PasswordForm()
+        
+        return render(request, 'users/changepassword.html', {'user': user, 'form': form})
