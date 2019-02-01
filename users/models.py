@@ -29,3 +29,4 @@ class Ride(models.Model):
     rider_id = models.IntegerField(default=-1, blank=False)
     sharer_id = ArrayField(models.IntegerField(), default=emptylist)
     sharer_passenger = ArrayField(models.IntegerField(), default=emptylist)
+    total_psg = models.IntegerField(validators=[MaxValueValidator(200),MinValueValidator(1)], default=0)

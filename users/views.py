@@ -101,6 +101,7 @@ def regisdriver(request, id):
 def display(request, id):
     user = get_object_or_404(User, id=id)
     user_profile = get_object_or_404(UserProfile, user=user)
+
     # rider
     # open rides
     queryset1 = Ride.objects.filter(status='open', rider_id=id)
@@ -109,14 +110,33 @@ def display(request, id):
     # confirmed rides
     queryset2 = Ride.objects.filter(status='confirmed', rider_id=id)
     confirmedrides = list(queryset2)
+    cfm_info_rider = []
+    for i in range(0, len(confirmedrides)):
+        curt_driver_id = confirmedrides[i].driver_id
+        curt_driver = get_object_or_404(User, id=curt_driver_id)
+        driver_name = curt_driver.first_name
+        vehicle_info = get_object_or_404(UserProfile, user=curt_driver).vehicle
+        curt_destination = confirmedrides[i].destination
+        curt_arrivaldate = confirmedrides[i].arrivaldate
+        cfm_info_rider.append({'destination': curt_destination, 'arrivaldate': curt_arrivaldate, 'driver_name': driver_name, 'vehicle_info': vehicle_info})
 
     # driver
     queryset3 = Ride.objects.filter(~Q(status='complete'), driver_id=id)
     drive = list(queryset3)
+    # if has current drive
     has_drive = len(drive) > 0
+    owner = ''
+    sharers = []
     if has_drive:
         drive = drive[0]
-    
+        owner = get_object_or_404(User, id=drive.rider_id).first_name
+        for i in range(0, len(drive.sharer_id)):
+            curt_share_id = drive.sharer_id[i]
+            name = get_object_or_404(User, id=curt_share_id).first_name
+            num_psg = drive.sharer_passenger[i]
+            curt_sharer = {'name': name, 'num': num_psg}
+            sharers.append(curt_sharer)
+
     # share
     # unconfirmed
     queryset4 = Ride.objects.filter(status='open')
@@ -132,7 +152,13 @@ def display(request, id):
     confirmedshares = []
     for one in tempconfirmedshare:
         if id in one.sharer_id:
-            confirmedshares.append(one)
+            curt_rider_id = one.rider_id
+            rider_name = get_object_or_404(User, id=curt_rider_id).first_name
+            curt_driver_id = one.driver_id
+            curt_driver = get_object_or_404(User, id=curt_driver_id)
+            driver_name = curt_driver.first_name
+            vehicle_info = get_object_or_404(UserProfile, user=curt_driver).vehicle
+            confirmedshares.append({'rider_name': rider_name, 'destination': one.destination, 'arrivaldate': one.arrivaldate, 'driver_name': driver_name, 'vehicle_info': vehicle_info})
 
     context = {
         'user': user,
@@ -140,9 +166,11 @@ def display(request, id):
         'has_drive': has_drive,
         'drive': drive,
         'openrides': openrides,
-        'confirmedrides': confirmedrides,
+        'cfm_info_rider': cfm_info_rider,
         'openshares': openshares,
-        'confirmedshares': confirmedshares
+        'confirmedshares': confirmedshares,
+        'owner': owner,
+        'sharers': sharers
     }
     return render(request, 'users/display.html', context)
 
@@ -213,6 +241,8 @@ def complete(request, id, rid):
     ride.status = 'complete'
     ride.save()
 
+    # send emails
+
     return HttpResponseRedirect(reverse('users:display', args=[id]))
 
 # find available rides for driver
@@ -236,6 +266,7 @@ def findridedriver(request, id):
             totalpsg += number
         if totalpsg <= user_profile.capacity:
             rides.append(ride)
+        ride.total_psg = totalpsg
 
     return render(request, 'users/findridedriver.html', {'user': user, 'user_profile': user_profile, 'rides': rides})
 

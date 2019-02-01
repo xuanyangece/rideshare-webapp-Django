@@ -12,7 +12,7 @@
         {% for ride in rides %}
         <li>
             <p>To {{ ride.destination }} before {{ ride.arrivaldate }}</p>
-            <p>Passenger number: {{ ride.passenger }}</p>
+            <p>Passenger number: {{ ride.total_psg }}</p>
             <a href="{% url 'users:handledrive' user.id ride.id %}">Go for this one!</a>
         </li>
         <br>

@@ -13,7 +13,6 @@
     <ul>Here are sharable rides you can join:
         {% for ride in sharerides %}
         <li>
-            <p>Driver id: {{ ride.driver_id }}</p>
             <p>To {{ ride.destination }} before {{ ride.arrivaldate }}</p>
 	    <a href="{% url 'users:joinshare' user.id ride.id passenger %}">join this ride</a>
         </li>

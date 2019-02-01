@@ -26,11 +26,12 @@
     </ul>
     {% endif %}
 
-    {% if confirmedrides|length > 0 %}
+    {% if cfm_info_rider|length > 0 %}
     <ul>Here are your confirmed rides as main rider:
-        {% for ride in confirmedrides %}
+        {% for ride in cfm_info_rider %}
         <li>
-            <p>Driver id: {{ ride.driver_id }}</p>
+            <p>Driver : {{ ride.driver_name }}</p>
+            <p>And vehicle type: {{ ride.vehicle_info }}</p>
             <p>To {{ ride.destination }} before {{ ride.arrivaldate }}</p>
         </li>
         {% endfor %}
@@ -58,10 +59,10 @@
     <ul>Here are your confirmed rides as sharer:
         {% for ride in confirmedshares %}
         <li>
-            <a href="{% url 'users:curtride' user.id ride.id %}">To {{ ride.destination }} before {{ ride.arrivaldate }}</a>
-            <p>Id of Driver: {{ ride.driver_id }}</p>
-            <p>Id of Main Rider: {{ ride.rider_id}}</p>
-            <p>It's confirmed, you cannot delete.</p>
+            <p>Driver : {{ ride.driver_name }}</p>
+            <p>And vehicle type: {{ ride.vehicle_info }}</p>
+            <p>To {{ ride.destination }} before {{ ride.arrivaldate }}</p>
+            <p>You are sharing this ride with main rider: {{ ride.rider_name }}</p>
             <br>
         </li>
         {% endfor %}
@@ -75,6 +76,20 @@
     {% if has_drive %}
     <h4>And here's your drive info as a driver:</h4>
     <p>Your drive to {{ drive.destination }} is going on!<a href="{% url 'users:complete' user.id drive.id %}">complete</a></p>
+    <p>More info:</p>
+    <p>Current main rider: {{ owner }} of {{ drive.passenger }} people</p>
+    {% if sharers|length > 0 %}
+    <ul>
+    {% for share in sharers %}
+        <li>
+            <p>Name of sharer: {{ share.name }}</p>
+            <p>Number of this share group: {{ share.num }}</p>
+        </li>
+    {% endfor %}
+    </ul>
+    {% else %}
+    <p>This is ride has no sharer yet.</p>
+    {% endif %}
     {% else %}
     <a href="{% url 'users:findridedriver' user.id %}">Find a new ride as driver!</a>
     {% endif %}
