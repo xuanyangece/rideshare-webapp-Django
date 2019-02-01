@@ -63,7 +63,7 @@
         {% for ride in openshares %}
         <li>
             <a href="{% url 'users:editshare' user.id ride.id %}">To {{ ride.destination }} before {{ ride.arrivaldate }}</a>
-            <p>Do not want to join this ride? <a href="{% url 'users:deleteshare' user.id ride.id %}">Yes</a></p>
+            <p>Do not want to exit this ride? <a href="{% url 'users:deleteshare' user.id ride.id %}">Yes</a></p>
             <br>
         </li>
         {% endfor %}
