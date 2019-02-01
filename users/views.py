@@ -384,18 +384,21 @@ def changepassword(request, id):
             password = form.cleaned_data['oldpassword']
             username = user.username
 
-            user = auth.authenticate(username=username, password=password)
+            curt_user = auth.authenticate(username=username, password=password)
 
-            if user is not None and user.is_active:
+            if curt_user is not None and curt_user.is_active:
                 new_password = form.cleaned_data['password2']
-                user.set_password(new_password)
-                user.save()
+                curt_user.set_password(new_password)
+                curt_user.save()
                 
                 return HttpResponseRedirect(reverse('users:login'))
             else:
-                form = PasswordForm()
-            
-                return render(request, 'users/changepassword.html', {'user': user, 'form': form, 'message': 'Old password incorrect, please enter again.'})
+                return render(request, 'users/changepassword.html', {'user': user, 'form': form, 'message': 'Old password is wrong. Try again.'})
+
+        # when form is not valid
+        form = PasswordForm()
+
+        return render(request, 'users/changepassword.html', {'user': user, 'form': form, 'message': 'Password format not correct, try again.'})
     else:
         form = PasswordForm()
         
